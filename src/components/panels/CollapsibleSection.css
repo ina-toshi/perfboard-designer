@@ -1,0 +1,29 @@
+.collapsible-section {
+  border: 1px solid #d0d5dd;
+  border-radius: 0.5rem;
+  background: #ffffff;
+}
+
+.collapsible-section summary {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  cursor: pointer;
+  color: #344054;
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0 0.75rem;
+}
+
+.collapsible-section summary:hover {
+  background: #f9fafb;
+}
+
+.collapsible-section summary::marker {
+  color: #667085;
+}
+
+.collapsible-section-content {
+  border-top: 1px solid #eaecf0;
+  padding: 0.875rem;
+}

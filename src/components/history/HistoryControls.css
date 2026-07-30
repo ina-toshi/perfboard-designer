@@ -1,0 +1,30 @@
+.history-controls {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.history-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.history-buttons button {
+  min-width: 0;
+}
+
+.history-buttons button:disabled {
+  border-color: #d0d5dd;
+  background: #f2f4f7;
+  color: #98a2b3;
+  cursor: not-allowed;
+}
+
+.history-status {
+  margin: 0;
+  border-left: 3px solid #175cd3;
+  background: #eff8ff;
+  color: #1849a9;
+  font-size: 0.7rem;
+  padding: 0.375rem 0.5rem;
+}

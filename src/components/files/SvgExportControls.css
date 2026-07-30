@@ -1,0 +1,56 @@
+.svg-export-controls {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.svg-export-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.svg-export-buttons button {
+  min-width: 0;
+}
+
+.svg-export-orientation,
+.svg-print-note,
+.svg-export-operation,
+.svg-export-message,
+.svg-export-error {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+.svg-export-orientation {
+  color: #344054;
+  font-weight: 700;
+}
+
+.svg-print-note {
+  color: #475467;
+}
+
+.svg-export-operation,
+.svg-export-message,
+.svg-export-error {
+  padding: 0.625rem 0.75rem;
+}
+
+.svg-export-operation {
+  border-left: 3px solid #175cd3;
+  background: #eff8ff;
+  color: #1849a9;
+}
+
+.svg-export-message {
+  border-left: 3px solid #039855;
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+.svg-export-error {
+  border-left: 3px solid #d92d20;
+  background: #fef3f2;
+  color: #b42318;
+}

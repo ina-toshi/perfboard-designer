@@ -1,0 +1,26 @@
+:root {
+  color: #1d2939;
+  background: #f5f7fb;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP',
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}

@@ -1,0 +1,76 @@
+.inspector-tabs {
+  grid-area: inspector;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #d0d5dd;
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
+.inspector-tab-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.375rem;
+  border-bottom: 1px solid #eaecf0;
+  background: #f9fafb;
+  padding: 0.625rem;
+}
+
+.inspector-tab-list button {
+  min-width: 0;
+  min-height: 2rem;
+  padding: 0.3rem 0.4rem;
+  font-size: 0.8rem;
+}
+
+.inspector-tab-list button.is-active {
+  border-color: #175cd3;
+  background: #eff8ff;
+  color: #175cd3;
+}
+
+.highlight-status {
+  display: grid;
+  gap: 0.5rem;
+  border-bottom: 1px solid #fec84b;
+  background: #fffaeb;
+  color: #7a2e0e;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.625rem 0.75rem;
+}
+
+.highlight-status button {
+  min-height: 2rem;
+  justify-self: start;
+  border-color: #f79009;
+  color: #b54708;
+  font-size: 0.78rem;
+}
+
+.inspector-tab-scroll {
+  min-height: 0;
+  overflow: auto;
+}
+
+.inspector-tab-empty {
+  padding: 1.25rem;
+}
+
+.inspector-tab-empty h2 {
+  margin-bottom: 0.75rem;
+}
+
+.inspector-tab-empty p {
+  margin-bottom: 0;
+  font-size: 0.875rem;
+}
+
+.inspector-tab-scroll .part-inspector {
+  grid-area: auto;
+  border: 0;
+  border-radius: 0;
+}

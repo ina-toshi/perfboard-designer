@@ -1,0 +1,260 @@
+.part {
+  cursor: default;
+  outline: none;
+}
+
+.part.is-selectable {
+  cursor: grab;
+}
+
+.part-lead {
+  stroke: #344054;
+  stroke-width: 3;
+}
+
+.resistor-body {
+  fill: #f4d78d;
+  stroke: #7a5a16;
+  stroke-width: 2;
+}
+
+.led-body {
+  fill-opacity: 0.86;
+  stroke: #7f1d1d;
+  stroke-width: 2;
+}
+
+.led-polarity {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+}
+
+.diode-body {
+  fill: #202939;
+  stroke: #101828;
+  stroke-width: 2;
+}
+
+.diode-cathode-band {
+  stroke: #f9fafb;
+  stroke-width: 4;
+}
+
+.part-diode .part-value {
+  fill: #ffffff;
+  font-size: 6px;
+}
+
+.capacitor-plate {
+  stroke: #344054;
+  stroke-width: 4;
+}
+
+.capacitor-positive {
+  fill: #b42318;
+  font-size: 12px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+.dip-body {
+  fill: #303846;
+  stroke: #101828;
+  stroke-width: 2;
+}
+
+.dip-pin-one-marker {
+  fill: #d0d5dd;
+  stroke: #101828;
+  stroke-width: 1.5;
+}
+
+.pin-header-body {
+  fill: #344054;
+  stroke: #101828;
+  stroke-width: 2;
+}
+
+.pin-header-male .pin-header-body {
+  fill: #3d2b14;
+  stroke: #fdb022;
+  stroke-width: 3;
+}
+
+.pin-header-female .pin-header-body {
+  fill: #153a4d;
+  stroke: #67e8f9;
+  stroke-width: 3;
+}
+
+.pin-header-male-pin {
+  fill: #fdb022;
+  stroke: #fff1c2;
+  stroke-width: 2;
+}
+
+.pin-header-male-pin-tip {
+  fill: #fff7d6;
+  stroke: #b54708;
+  stroke-width: 1.5;
+}
+
+.pin-header-female-socket {
+  fill: #466273;
+  stroke: #7fb3c8;
+  stroke-width: 2;
+}
+
+.pin-header-female-opening {
+  fill: #0b1f2a;
+  stroke: #27485a;
+  stroke-width: 1.5;
+}
+
+.pin-header-gender-label {
+  font-size: 9px;
+  font-weight: 900;
+  text-anchor: middle;
+}
+
+.pin-header-gender-male {
+  fill: #a15c00;
+}
+
+.pin-header-gender-female {
+  fill: #0e7490;
+}
+
+.connector-body {
+  fill: #d0d5dd;
+  stroke: #475467;
+  stroke-width: 2;
+}
+
+.connector-key {
+  fill: none;
+  stroke: #b42318;
+  stroke-width: 3;
+}
+
+.tactile-switch-body {
+  fill: #e0f2fe;
+  stroke: #0369a1;
+  stroke-width: 2;
+}
+
+.tactile-switch-button {
+  fill: #ffffff;
+  stroke: #0369a1;
+  stroke-width: 2;
+}
+
+.part-tactile-switch .part-reference {
+  fill: #0c4a6e;
+}
+
+.pin-one-marker {
+  fill: none;
+  stroke: #fdb022;
+  stroke-width: 2;
+}
+
+.part-reference,
+.part-value {
+  text-anchor: middle;
+  user-select: none;
+}
+
+.part-pins text {
+  text-anchor: middle;
+  pointer-events: none;
+  user-select: none;
+}
+
+.part-reference {
+  fill: #101828;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.part-value {
+  fill: #344054;
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.part-dip .part-reference,
+.part-dip .part-value {
+  fill: #ffffff;
+}
+
+.external-label {
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.part-pins circle {
+  fill: #f9fafb;
+  stroke: #344054;
+  stroke-width: 2;
+}
+
+.part-pins text {
+  fill: #101828;
+  font-size: 6px;
+  font-weight: 700;
+}
+
+.part.is-selected {
+  filter: drop-shadow(0 0 5px #2563eb);
+}
+
+.part.is-selected .part-pins circle {
+  fill: #dbeafe;
+  stroke: #175cd3;
+  stroke-width: 3;
+}
+
+.part.is-connectivity-highlighted {
+  filter: drop-shadow(0 0 6px var(--connectivity-highlight-color));
+}
+
+.part-pins g.is-connectivity-highlighted circle {
+  fill: #ffffff;
+  stroke: var(--connectivity-highlight-color);
+  stroke-width: 4;
+  stroke-dasharray: 3 2;
+}
+
+.part-pins g.is-connectivity-highlighted text {
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.part.is-preview-valid {
+  pointer-events: none;
+  opacity: 0.72;
+  filter: drop-shadow(0 0 4px #039855);
+}
+
+.part.is-preview-invalid {
+  pointer-events: none;
+  opacity: 0.62;
+  filter: drop-shadow(0 0 5px #d92d20);
+}
+
+.part.is-preview-invalid .part-pins circle {
+  fill: #fee4e2;
+  stroke: #d92d20;
+}
+
+.board-svg[data-display-mode='back'] [data-layer='front-components'] {
+  opacity: 0.42;
+}
+
+.board-svg[data-display-mode='overlay'] [data-layer='front-components'] {
+  opacity: 0.76;
+}

@@ -1,0 +1,132 @@
+.board-canvas {
+  grid-area: board;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.board-svg {
+  --connectivity-highlight-color: #175cd3;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #b8c5d6;
+  border-radius: 0.75rem;
+  background: #e8eef7;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-x pan-y;
+}
+
+.board-svg.highlight-critical {
+  --connectivity-highlight-color: #912018;
+}
+
+.board-svg.highlight-error {
+  --connectivity-highlight-color: #d92d20;
+}
+
+.board-svg.highlight-warning {
+  --connectivity-highlight-color: #f79009;
+}
+
+.board-svg:active {
+  cursor: grabbing;
+}
+
+.board-svg.is-placing {
+  cursor: crosshair;
+}
+
+.board-svg[data-part-labels-visible='false'] .part-reference,
+.board-svg[data-part-labels-visible='false'] .part-value,
+.board-svg[data-part-labels-visible='false'] .pin-header-gender-label {
+  display: none;
+}
+
+.board-outline {
+  fill: #d7b779;
+  stroke: #8d6e3d;
+  stroke-width: 2;
+}
+
+.board-hole {
+  fill: #27354a;
+  stroke: #f7edd8;
+  stroke-width: 2;
+}
+
+.connectivity-highlight-holes {
+  pointer-events: none;
+}
+
+.connectivity-highlight-holes circle {
+  fill: none;
+  stroke: var(--connectivity-highlight-color);
+  stroke-width: 4;
+  stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.column-labels,
+.row-labels {
+  fill: #344054;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.board-orientation circle {
+  fill: #b42318;
+}
+
+.board-orientation text {
+  fill: #ffffff;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.board-svg[data-display-mode='back'] .board-outline {
+  fill: #bcc8d8;
+}
+
+.board-svg[data-display-mode='overlay'] .board-outline {
+  fill: #c8bd9e;
+}
+
+.board-canvas-help {
+  margin: 0.75rem 0 0;
+  color: #475467;
+  font-size: 0.875rem;
+}
+
+.board-highlight-label {
+  margin: 0.625rem 0 0;
+  border-left: 4px solid #175cd3;
+  background: #eff8ff;
+  color: #175cd3;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 0.5rem 0.75rem;
+}
+
+.board-highlight-label.highlight-critical {
+  border-left-color: #912018;
+  background: #fef3f2;
+  color: #912018;
+}
+
+.board-highlight-label.highlight-error {
+  border-left-color: #d92d20;
+  background: #fff6ed;
+  color: #b42318;
+}
+
+.board-highlight-label.highlight-warning {
+  border-left-color: #f79009;
+  background: #fffaeb;
+  color: #b54708;
+}

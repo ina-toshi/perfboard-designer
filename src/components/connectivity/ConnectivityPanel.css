@@ -1,0 +1,100 @@
+.connectivity-panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.connectivity-panel h2 {
+  margin-bottom: 0.5rem;
+}
+
+.inspection-summary {
+  margin-bottom: 0;
+  font-size: 0.82rem;
+}
+
+.inspection-empty {
+  margin: 0;
+  border-left: 4px solid #f79009;
+  background: #fffaeb;
+  color: #7a2e0e;
+  font-size: 0.85rem;
+  padding: 0.75rem;
+}
+
+.inspection-empty.is-success {
+  border-left-color: #039855;
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+.issue-list {
+  display: grid;
+  gap: 0.625rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.issue-card {
+  display: grid;
+  width: 100%;
+  gap: 0.375rem;
+  border-left-width: 5px;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.issue-card.issue-critical {
+  border-color: #912018;
+  background: #fef3f2;
+}
+
+.issue-card.issue-error {
+  border-color: #d92d20;
+  background: #fff6ed;
+}
+
+.issue-card.issue-warning {
+  border-color: #f79009;
+  background: #fffaeb;
+}
+
+.issue-card.is-active {
+  outline: 3px solid #344054;
+  outline-offset: 1px;
+}
+
+.issue-severity {
+  width: fit-content;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #344054;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.1rem 0.45rem;
+}
+
+.issue-card dl {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.25rem 0 0;
+}
+
+.issue-card dl div {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 0.35rem;
+  font-size: 0.72rem;
+}
+
+.issue-card dt {
+  color: #667085;
+}
+
+.issue-card dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #344054;
+  font-weight: 500;
+}

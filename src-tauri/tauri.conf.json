@@ -1,0 +1,41 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Perfboard Designer",
+  "version": "0.1.0",
+  "identifier": "com.perfboarddesigner.desktop",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Perfboard Designer",
+        "width": 800,
+        "height": 600,
+        "minWidth": 640,
+        "minHeight": 480,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app", "dmg"],
+    "shortDescription": "ユニバーサル基板の部品配置と配線を設計するデスクトップアプリ",
+    "longDescription": "2.54mmピッチのユニバーサル基板へ部品と表面・裏面配線を配置し、接続状態を確認するためのデスクトップアプリです。",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "perfboard-designer",
+  "description": "ユニバーサル基板の部品配置と配線を設計するデスクトップアプリ",
+  "license": "MIT",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "format": "prettier --check .prettierrc.json README.md index.html package.json package-lock.json tsconfig.json tsconfig.app.json tsconfig.node.json vite.config.ts \"src/**/*.{ts,tsx,css}\" \"src-tauri/capabilities/*.json\" src-tauri/tauri.conf.json",
+    "format:write": "prettier --write .prettierrc.json README.md index.html package.json package-lock.json tsconfig.json tsconfig.app.json tsconfig.node.json vite.config.ts \"src/**/*.{ts,tsx,css}\" \"src-tauri/capabilities/*.json\" src-tauri/tauri.conf.json",
+    "typecheck": "tsc -b --pretty false",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/plugin-dialog": "^2.7.2",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.4",
+    "@types/node": "^26.1.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "oxlint": "^1.75.0",
+    "prettier": "^3.9.6",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.5",
+    "vitest": "^4.1.10"
+  }
+}

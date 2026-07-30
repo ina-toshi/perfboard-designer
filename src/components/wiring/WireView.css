@@ -1,0 +1,99 @@
+.wire {
+  outline: none;
+}
+
+.wire.is-selectable .wire-hit-target {
+  cursor: grab;
+}
+
+.wire.is-selectable:active .wire-hit-target {
+  cursor: grabbing;
+}
+
+.wire-path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 5;
+}
+
+.wire-solder .wire-path {
+  stroke-dasharray: 8 6;
+}
+
+.wire-endpoint {
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+
+.wire.is-guide .wire-path {
+  stroke: #98a2b3;
+  stroke-width: 2;
+  stroke-dasharray: 3 3;
+}
+
+.wire.is-guide .wire-endpoint {
+  display: none;
+}
+
+.wire.is-selected {
+  opacity: 1;
+  filter: drop-shadow(0 0 5px #fdb022);
+}
+
+.wire.is-selected .wire-path {
+  stroke-width: 8;
+}
+
+.wire.is-selected .wire-endpoint {
+  stroke: #fdb022;
+  stroke-width: 4;
+}
+
+.wire.is-connectivity-highlighted {
+  opacity: 1;
+  filter: drop-shadow(0 0 6px var(--connectivity-highlight-color));
+}
+
+.wire.is-connectivity-highlighted .wire-path {
+  stroke: var(--connectivity-highlight-color);
+  stroke-width: 9;
+  stroke-dasharray: 4 3;
+}
+
+.wire.is-connectivity-highlighted .wire-endpoint {
+  stroke: var(--connectivity-highlight-color);
+  stroke-width: 5;
+}
+
+.wire.is-preview-valid {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.wire.is-preview-invalid {
+  pointer-events: none;
+  opacity: 0.72;
+  filter: drop-shadow(0 0 4px #d92d20);
+}
+
+.wire.is-preview-invalid .wire-path {
+  stroke: #d92d20;
+}
+
+.wire-hit-target {
+  fill: none;
+  stroke: transparent;
+  stroke-linecap: round;
+  stroke-width: 18;
+  cursor: grab;
+  pointer-events: stroke;
+}
+
+.wire-endpoint-hit-target {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 2;
+  cursor: grab;
+  pointer-events: all;
+}
