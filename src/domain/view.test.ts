@@ -4,6 +4,7 @@ import {
   shouldMirrorBoard,
   shouldMirrorPart,
   shouldMirrorWire,
+  getBoardContentLayerOrder,
   type BoardViewState,
 } from './view'
 
@@ -12,12 +13,23 @@ describe('表示面ごとの左右反転', () => {
     displayMode: 'front',
     mirrorBack: true,
     showPartLabels: true,
+    wireInspectionActive: false,
     zoom: 1,
     pan: { x: 0, y: 0 },
   }
 
   it('部品ラベルは既定で非表示にする', () => {
     expect(DEFAULT_BOARD_VIEW_STATE.showPartLabels).toBe(false)
+  })
+
+  it('通常は部品を配線より手前に描画する', () => {
+    expect(getBoardContentLayerOrder(baseView)).toEqual(['wires', 'components'])
+  })
+
+  it('配線の確認中は配線を部品より手前に描画する', () => {
+    expect(
+      getBoardContentLayerOrder({ ...baseView, wireInspectionActive: true }),
+    ).toEqual(['components', 'wires'])
   })
 
   it('表面では左右反転しない', () => {

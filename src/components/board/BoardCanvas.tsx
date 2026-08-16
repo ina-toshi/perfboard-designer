@@ -17,6 +17,7 @@ import {
 } from '../../domain/wires'
 import type { BoardViewState } from '../../domain/view'
 import {
+  getBoardContentLayerOrder,
   shouldMirrorBoard,
   shouldMirrorPart,
   shouldMirrorWire,
@@ -174,8 +175,12 @@ export function BoardCanvas({
                 },
           ),
         }
-  const selectionToolActive = !placementActive && wireToolSide === null
-  const interactionActive = placementActive || wireToolSide !== null
+  const editingEnabled = !view.wireInspectionActive
+  const selectionToolActive =
+    editingEnabled && !placementActive && wireToolSide === null
+  const interactionActive =
+    editingEnabled && (placementActive || wireToolSide !== null)
+  const contentLayerOrder = getBoardContentLayerOrder(view)
   const isNetIsolationActive = highlight?.key.startsWith('net:') ?? false
   const wireDisplayMode = isNetIsolationActive ? 'overlay' : view.displayMode
   const wireLayerOrder: WireSide[] =
@@ -481,6 +486,10 @@ export function BoardCanvas({
   }
 
   function handleCanvasClick(event: MouseEvent<SVGSVGElement>) {
+    if (!editingEnabled) {
+      return
+    }
+
     if (didPanRef.current) {
       didPanRef.current = false
       return
@@ -528,6 +537,7 @@ export function BoardCanvas({
         data-display-mode={view.displayMode}
         data-back-mirrored={mirrorBoard}
         data-part-labels-visible={view.showPartLabels}
+        data-wire-inspection-active={view.wireInspectionActive}
         onWheel={handleWheel}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -629,64 +639,79 @@ export function BoardCanvas({
               })}
             </g>
           )}
-          {wireLayerOrder.map((side) => (
-            <g key={side} data-layer={`${side}-wires`}>
-              {wires
-                .filter(
-                  (wire) =>
-                    wire.side === side &&
-                    isVisibleWire(wire) &&
-                    !(
-                      (elementDragPreview?.kind === 'wire' ||
-                        elementDragPreview?.kind === 'wire-endpoint') &&
-                      elementDragPreview.id === wire.id
-                    ),
-                )
-                .map((wire) => (
-                  <WireView
-                    key={wire.id}
-                    wire={wire}
-                    board={board}
-                    displayMode={wireDisplayMode}
-                    mirrorHorizontally={getWireMirror(wire.side)}
-                    selected={!isGuideWire(wire) && wire.id === selectedWireId}
-                    highlighted={
-                      !isGuideWire(wire) &&
-                      !isNetIsolationActive &&
-                      highlightedWireIds.has(wire.id)
-                    }
-                    onSelect={selectionToolActive ? onSelectWire : undefined}
-                    onDragStart={
-                      selectionToolActive
-                        ? (wireId, event) =>
-                            beginElementDrag('wire', wireId, event)
-                        : undefined
-                    }
-                  />
-                ))}
-            </g>
-          ))}
-          <g data-layer="front-components">
-            {visibleParts.map((part) => (
-              <PartView
-                key={part.id}
-                part={part}
-                board={board}
-                mirrorHorizontally={partMirror}
-                selected={part.id === selectedPartId}
-                highlighted={
-                  !isNetIsolationActive && highlightedPartIds.has(part.id)
-                }
-                highlightedPinNumbers={highlightedPinsByPart.get(part.id) ?? []}
-                onSelect={selectionToolActive ? onSelectPart : undefined}
-                onDragStart={
-                  selectionToolActive
-                    ? (partId, event) => beginElementDrag('part', partId, event)
-                    : undefined
-                }
-              />
-            ))}
-          </g>
+          {contentLayerOrder.flatMap((layer) =>
+            layer === 'wires'
+              ? wireLayerOrder.map((side) => (
+                  <g key={side} data-layer={`${side}-wires`}>
+                    {wires
+                      .filter(
+                        (wire) =>
+                          wire.side === side &&
+                          isVisibleWire(wire) &&
+                          !(
+                            (elementDragPreview?.kind === 'wire' ||
+                              elementDragPreview?.kind === 'wire-endpoint') &&
+                            elementDragPreview.id === wire.id
+                          ),
+                      )
+                      .map((wire) => (
+                        <WireView
+                          key={wire.id}
+                          wire={wire}
+                          board={board}
+                          displayMode={wireDisplayMode}
+                          mirrorHorizontally={getWireMirror(wire.side)}
+                          selected={
+                            !isGuideWire(wire) && wire.id === selectedWireId
+                          }
+                          highlighted={
+                            !isGuideWire(wire) &&
+                            !isNetIsolationActive &&
+                            highlightedWireIds.has(wire.id)
+                          }
+                          onSelect={
+                            selectionToolActive ? onSelectWire : undefined
+                          }
+                          onDragStart={
+                            selectionToolActive
+                              ? (wireId, event) =>
+                                  beginElementDrag('wire', wireId, event)
+                              : undefined
+                          }
+                        />
+                      ))}
+                  </g>
+                ))
+              : [
+                  <g key="components" data-layer="front-components">
+                    {visibleParts.map((part) => (
+                      <PartView
+                        key={part.id}
+                        part={part}
+                        board={board}
+                        mirrorHorizontally={partMirror}
+                        selected={part.id === selectedPartId}
+                        highlighted={
+                          !isNetIsolationActive &&
+                          highlightedPartIds.has(part.id)
+                        }
+                        highlightedPinNumbers={
+                          highlightedPinsByPart.get(part.id) ?? []
+                        }
+                        onSelect={
+                          selectionToolActive ? onSelectPart : undefined
+                        }
+                        onDragStart={
+                          selectionToolActive
+                            ? (partId, event) =>
+                                beginElementDrag('part', partId, event)
+                            : undefined
+                        }
+                      />
+                    ))}
+                  </g>,
+                ],
+          )}
           {selectionToolActive && (
             <g data-layer="wire-endpoint-targets">
               {wireLayerOrder.flatMap((side) =>
@@ -720,60 +745,67 @@ export function BoardCanvas({
               )}
             </g>
           )}
-          <g data-layer="selection">
-            {placementPreview !== null && (
-              <PartView
-                part={placementPreview}
-                board={board}
-                mirrorHorizontally={partMirror}
-                previewState={previewValid ? 'valid' : 'invalid'}
-              />
-            )}
-            {wireDraftPreview !== null && isVisibleWire(wireDraftPreview) && (
-              <WireView
-                wire={wireDraftPreview}
-                board={board}
-                displayMode={wireDisplayMode}
-                mirrorHorizontally={getWireMirror(wireDraftPreview.side)}
-                previewState={
-                  isZeroLengthWire(wireDraftPreview) ? 'invalid' : 'valid'
-                }
-              />
-            )}
-            {draggedPartPreview !== null && (
-              <PartView
-                part={draggedPartPreview}
-                board={board}
-                mirrorHorizontally={partMirror}
-                previewState={
-                  isPartWithinBoard(draggedPartPreview, board)
-                    ? 'valid'
-                    : 'invalid'
-                }
-              />
-            )}
-            {draggedWirePreview !== null &&
-              isVisibleWire(draggedWirePreview) && (
+          {editingEnabled && (
+            <g data-layer="selection">
+              {placementPreview !== null && (
+                <PartView
+                  part={placementPreview}
+                  board={board}
+                  mirrorHorizontally={partMirror}
+                  previewState={previewValid ? 'valid' : 'invalid'}
+                />
+              )}
+              {wireDraftPreview !== null && isVisibleWire(wireDraftPreview) && (
                 <WireView
-                  wire={draggedWirePreview}
+                  wire={wireDraftPreview}
                   board={board}
                   displayMode={wireDisplayMode}
-                  mirrorHorizontally={getWireMirror(draggedWirePreview.side)}
+                  mirrorHorizontally={getWireMirror(wireDraftPreview.side)}
                   previewState={
-                    isWireWithinBoard(draggedWirePreview, board) &&
-                    !isZeroLengthWire(draggedWirePreview)
+                    isZeroLengthWire(wireDraftPreview) ? 'invalid' : 'valid'
+                  }
+                />
+              )}
+              {draggedPartPreview !== null && (
+                <PartView
+                  part={draggedPartPreview}
+                  board={board}
+                  mirrorHorizontally={partMirror}
+                  previewState={
+                    isPartWithinBoard(draggedPartPreview, board)
                       ? 'valid'
                       : 'invalid'
                   }
                 />
               )}
-          </g>
+              {draggedWirePreview !== null &&
+                isVisibleWire(draggedWirePreview) && (
+                  <WireView
+                    wire={draggedWirePreview}
+                    board={board}
+                    displayMode={wireDisplayMode}
+                    mirrorHorizontally={getWireMirror(draggedWirePreview.side)}
+                    previewState={
+                      isWireWithinBoard(draggedWirePreview, board) &&
+                      !isZeroLengthWire(draggedWirePreview)
+                        ? 'valid'
+                        : 'invalid'
+                    }
+                  />
+                )}
+            </g>
+          )}
         </g>
       </svg>
       {highlight !== null && (
         <p className={`board-highlight-label highlight-${highlight.tone}`}>
           {isNetIsolationActive ? '選択中のネット' : '基板強調中'}:{' '}
           {highlight.label}
+        </p>
+      )}
+      {view.wireInspectionActive && (
+        <p className="board-inspection-status" role="status">
+          配線を手前にした確認表示中です。ボタンを離すと編集できます。
         </p>
       )}
       <p className="board-canvas-help">

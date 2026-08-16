@@ -35,7 +35,7 @@ describe('recoveryService', () => {
     const detected = await detectRecoveryData(memory.storage)
 
     expect(memory.readContents()).toContain('"recoveryVersion": 1')
-    expect(memory.readContents()).toContain('"formatVersion": 0')
+    expect(memory.readContents()).toContain('"formatVersion": 1')
     expect(memory.readContents()).toContain('"name": "DATA"')
     expect(detected).toEqual({
       savedAt: '2026-07-26T08:00:00.000Z',

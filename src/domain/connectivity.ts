@@ -140,6 +140,8 @@ export function analyzeConnectivity(
     }
   }
 
+  // 折れ線の中間点は描画上の曲げ点であり、電気的な接続点ではない。
+  // Phase 1では従来どおり、配線の始点と終点だけを導通させる。
   for (const wire of design.wires) {
     unionFind.union(
       getConnectivityHoleKey(getWireStart(wire)),

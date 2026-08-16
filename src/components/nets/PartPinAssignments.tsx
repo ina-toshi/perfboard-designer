@@ -60,7 +60,7 @@ function TactileSwitchNetAssignment({
             pinNumbers.includes(candidate.pinNumber),
         )
         const netId = groupAssignments[0]?.netId ?? ''
-        const label = group === 'top' ? '上側（A1 / A2）' : '下側（B1 / B2）'
+        const label = group === 'left' ? '左側（A1 / A2）' : '右側（B1 / B2）'
 
         return (
           <div key={group} className="tactile-switch-net-assignment">
@@ -98,7 +98,7 @@ function TactileSwitchNetAssignment({
           </div>
         )
       })}
-      <p>上側と下側は別々の導通グループとして接続検査します。</p>
+      <p>左側と右側は別々の導通グループとして接続検査します。</p>
     </section>
   )
 }

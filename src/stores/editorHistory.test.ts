@@ -203,7 +203,7 @@ describe('editorHistoryReducer', () => {
     expect(rotationUndone.present.parts[0].rotation).toBe(0)
     expect(rotationRedone.present.parts[0]).toMatchObject({
       id: 'resistor-1',
-      rotation: 90,
+      rotation: 270,
     })
   })
 

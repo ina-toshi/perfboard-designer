@@ -45,7 +45,8 @@ import {
   type PinNetAssignment,
 } from '../domain/nets'
 import {
-  createWire,
+  areGridPointsEqual,
+  createWireFromPoints,
   DEFAULT_WIRE_COLORS,
   isWireWithinBoard,
   isZeroLengthWire,
@@ -64,6 +65,7 @@ export type WireDraft = {
   side: WireSide
   kind: WireKind
   start: GridPoint
+  points: GridPoint[]
   previewEnd: GridPoint | null
   color: string
 }
@@ -258,13 +260,22 @@ export function getActiveWireKind(tool: EditorTool): WireKind | null {
 export function getWireDraftPreview(state: EditorState): Wire | null {
   const draft = state.wireDraft
 
-  return draft?.previewEnd === null || draft === null
+  if (draft === null || draft.previewEnd === null) {
+    return null
+  }
+
+  const lastPoint = draft.points[draft.points.length - 1]
+  const previewPoints =
+    lastPoint !== undefined && areGridPointsEqual(lastPoint, draft.previewEnd)
+      ? draft.points
+      : [...draft.points, draft.previewEnd]
+
+  return previewPoints.length < 2
     ? null
-    : createWire(
+    : createWireFromPoints(
         'wire-draft-preview',
         draft.side,
-        draft.start,
-        draft.previewEnd,
+        previewPoints,
         draft.color,
         draft.kind,
       )
@@ -510,7 +521,8 @@ export function editorReducer(
         return { ...state, error: '移動する配線が見つかりません。' }
       }
 
-      const currentPoint = wire.points[action.endpointIndex]
+      const targetIndex = action.endpointIndex === 0 ? 0 : wire.points.length - 1
+      const currentPoint = wire.points[targetIndex]
 
       if (
         currentPoint !== undefined &&
@@ -523,7 +535,7 @@ export function editorReducer(
       const movedWire = {
         ...wire,
         points: wire.points.map((point, index) =>
-          index === action.endpointIndex ? { ...action.point } : point,
+          index === targetIndex ? { ...action.point } : point,
         ),
       }
 
@@ -626,6 +638,7 @@ export function editorReducer(
             side,
             kind,
             start: action.point,
+            points: [{ ...action.point }],
             previewEnd: action.point,
             color: DEFAULT_WIRE_COLORS[kind],
           },
@@ -633,31 +646,54 @@ export function editorReducer(
         }
       }
 
-      const wire = createWire(
-        action.id,
-        state.wireDraft.side,
-        state.wireDraft.start,
-        action.point,
-        state.wireDraft.color,
-        state.wireDraft.kind,
-      )
+      const lastPoint = state.wireDraft.points[state.wireDraft.points.length - 1]
 
-      if (!isWireWithinBoard(wire, action.board)) {
-        return { ...state, error: '配線の端点を基板内の穴へ置いてください。' }
-      }
-      if (isZeroLengthWire(wire)) {
+      if (lastPoint !== undefined && areGridPointsEqual(lastPoint, action.point)) {
+        if (state.wireDraft.points.length < 2) {
+          return {
+            ...state,
+            error: '始点と異なる穴を選んでください。',
+          }
+        }
+
+        const wire = createWireFromPoints(
+          action.id,
+          state.wireDraft.side,
+          state.wireDraft.points,
+          state.wireDraft.color,
+          state.wireDraft.kind,
+        )
+
+        if (!isWireWithinBoard(wire, action.board)) {
+          return {
+            ...state,
+            error: '配線の各点を基板内の穴へ置いてください。',
+          }
+        }
+        if (isZeroLengthWire(wire)) {
+          return {
+            ...state,
+            error: '配線には異なる穴を2点以上指定してください。',
+          }
+        }
+
         return {
           ...state,
-          error: '始点と異なる穴を終点として選んでください。',
+          wires: [...state.wires, wire],
+          selectedPartId: null,
+          selectedWireId: wire.id,
+          wireDraft: null,
+          error: null,
         }
       }
 
       return {
         ...state,
-        wires: [...state.wires, wire],
-        selectedPartId: null,
-        selectedWireId: wire.id,
-        wireDraft: null,
+        wireDraft: {
+          ...state.wireDraft,
+          points: [...state.wireDraft.points, { ...action.point }],
+          previewEnd: action.point,
+        },
         error: null,
       }
     }
@@ -1079,7 +1115,7 @@ export function editorReducer(
         return {
           ...state,
           error:
-            'タクトSWのネットは上側または下側の端子組から割り当ててください。',
+            'タクトSWのネットは左側または右側の端子組から割り当ててください。',
         }
       }
       if (!state.nets.some((net) => net.id === action.netId)) {
@@ -1155,7 +1191,7 @@ export function editorReducer(
         return {
           ...state,
           error:
-            'タクトSWのネットは上側または下側の端子組から解除してください。',
+            'タクトSWのネットは左側または右側の端子組から解除してください。',
         }
       }
 

@@ -35,7 +35,7 @@ import {
   type Rotation,
 } from './parts'
 import {
-  createWire,
+  createWireFromPoints,
   isWireWithinBoard,
   isZeroLengthWire,
   type Wire,
@@ -45,7 +45,7 @@ import {
 import type { EditorDesignState } from '../stores/editorStore'
 
 export const DESIGN_APPLICATION = 'perfboard-designer'
-export const DESIGN_FORMAT_VERSION = 0
+export const DESIGN_FORMAT_VERSION = 1
 
 export type DesignDocument = {
   formatVersion: typeof DESIGN_FORMAT_VERSION
@@ -304,24 +304,23 @@ function parseWire(
   if (!/^#[0-9a-f]{6}$/i.test(color)) {
     invalid(`${path}.colorは#から始まる6桁の色コードにしてください。`)
   }
-  if (!Array.isArray(source.points) || source.points.length !== 2) {
-    invalid(`${path}.pointsは現在、始点と終点の2点である必要があります。`)
+  if (!Array.isArray(source.points) || source.points.length < 2) {
+    invalid(`${path}.pointsは始点と終点を含む2点以上である必要があります。`)
   }
 
   const points = source.points.map((point, pointIndex) =>
     parseGridPoint(point, `${path}.points[${pointIndex}]`),
   )
-  const wire = createWire(
+  const wire = createWireFromPoints(
     id,
     source.side as WireSide,
-    points[0],
-    points[1],
+    points,
     color,
     kind as WireKind,
   )
 
   if (isZeroLengthWire(wire)) {
-    invalid(`${path}の始点と終点を同じ穴にはできません。`)
+    invalid(`${path}には異なる穴を2点以上指定してください。`)
   }
   if (!isWireWithinBoard(wire, board)) {
     invalid(`${path}の座標が基板の範囲外にあります。`)
@@ -432,10 +431,10 @@ function validateTactileSwitchAssignments(
       label: string
       pinNumbers: readonly string[]
     }> = [
-      { label: '上側（A1・A2）', pinNumbers: TACTILE_SWITCH_PIN_GROUPS.top },
+      { label: '左側（A1・A2）', pinNumbers: TACTILE_SWITCH_PIN_GROUPS.left },
       {
-        label: '下側（B1・B2）',
-        pinNumbers: TACTILE_SWITCH_PIN_GROUPS.bottom,
+        label: '右側（B1・B2）',
+        pinNumbers: TACTILE_SWITCH_PIN_GROUPS.right,
       },
     ]
 
@@ -553,7 +552,10 @@ export function parseDesignDocumentValue(value: unknown): EditorDesignState {
   if (document.application !== DESIGN_APPLICATION) {
     invalid(`applicationが「${DESIGN_APPLICATION}」ではないため開けません。`)
   }
-  if (document.formatVersion !== DESIGN_FORMAT_VERSION) {
+  if (
+    document.formatVersion !== 0 &&
+    document.formatVersion !== DESIGN_FORMAT_VERSION
+  ) {
     invalid(
       `formatVersion「${String(document.formatVersion)}」には対応していません。対応バージョンは${DESIGN_FORMAT_VERSION}です。`,
     )
@@ -601,6 +603,18 @@ export function parseDesignDocumentValue(value: unknown): EditorDesignState {
         assignmentKeys,
       ),
   )
+
+  if (
+    document.formatVersion === 0 &&
+    pinNetAssignments.some(
+      (assignment) =>
+        partsById.get(assignment.partId)?.kind === 'tactile-switch',
+    )
+  ) {
+    invalid(
+      'formatVersion 0のタクトSW端子割り当ては自動変換できません。形式1で左側・右側の端子組へ割り当て直してください。',
+    )
+  }
 
   validateTactileSwitchAssignments(parts, pinNetAssignments)
 

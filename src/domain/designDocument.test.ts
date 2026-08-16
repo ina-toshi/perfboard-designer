@@ -85,7 +85,7 @@ describe('designDocument', () => {
     const restored = parseDesignDocument(json)
 
     expect(json.endsWith('\n')).toBe(true)
-    expect(json).toContain('\n  "formatVersion": 0,')
+    expect(json).toContain('\n  "formatVersion": 1,')
     expect(raw.formatVersion).toBe(DESIGN_FORMAT_VERSION)
     expect(raw.application).toBe(DESIGN_APPLICATION)
     expect(raw.components[0].pins).toBeUndefined()
@@ -94,11 +94,11 @@ describe('designDocument', () => {
     expect(restored).toEqual(design)
   })
 
-  it('空の新規設計を形式バージョン0で生成する', () => {
+  it('空の新規設計を形式バージョン1で生成する', () => {
     const document = createDesignDocument(createEmptyDesignState())
 
     expect(document).toMatchObject({
-      formatVersion: 0,
+      formatVersion: 1,
       application: 'perfboard-designer',
       metadata: { name: '名称未設定' },
       board: { columns: 30, rows: 20, pitchMm: 2.54 },
@@ -126,10 +126,10 @@ describe('designDocument', () => {
 
   it('未対応formatVersionを明確に拒否する', () => {
     const document = createValidDocument()
-    document.formatVersion = 1
+    document.formatVersion = 2
 
     expect(() => parseDesignDocument(JSON.stringify(document))).toThrow(
-      'formatVersion「1」には対応していません。対応バージョンは0です。',
+      'formatVersion「2」には対応していません。対応バージョンは1です。',
     )
   })
 
@@ -320,7 +320,7 @@ describe('designDocument', () => {
     ).toThrow('pinNetAssignmentsは配列である必要があります。')
   })
 
-  it('タクトSWの上側と下側へ別ネットを保存して復元する', () => {
+  it('タクトSWの左側と右側へ別ネットを保存して復元する', () => {
     const design = createSampleDesign()
     const tactileSwitch = createPart('tactile-switch', 'switch-1', 'SW1', {
       column: 10,
@@ -352,7 +352,7 @@ describe('designDocument', () => {
     })
 
     expect(() => parseDesignDocument(serializeDesignDocument(design))).toThrow(
-      'タクトSW「SW1」の上側（A1・A2）は2端子とも割り当ててください。',
+      'タクトSW「SW1」の左側（A1・A2）は2端子とも割り当ててください。',
     )
 
     design.pinNetAssignments = tactileSwitch.pins.map((pin, index) => ({
@@ -362,7 +362,30 @@ describe('designDocument', () => {
     }))
 
     expect(() => parseDesignDocument(serializeDesignDocument(design))).toThrow(
-      'タクトSW「SW1」の上側（A1・A2）には同じネットを割り当ててください。',
+      'タクトSW「SW1」の左側（A1・A2）には同じネットを割り当ててください。',
+    )
+  })
+
+  it('形式0のタクトSW端子割り当ては安全のため読み込みを拒否する', () => {
+    const design = createSampleDesign()
+    const tactileSwitch = createPart('tactile-switch', 'switch-1', 'SW1', {
+      column: 10,
+      row: 10,
+    })
+    design.parts.push(tactileSwitch)
+    design.pinNetAssignments.push(
+      { partId: tactileSwitch.id, pinNumber: 'A1', netId: 'net-power' },
+      { partId: tactileSwitch.id, pinNumber: 'A2', netId: 'net-power' },
+      { partId: tactileSwitch.id, pinNumber: 'B1', netId: 'net-ground' },
+      { partId: tactileSwitch.id, pinNumber: 'B2', netId: 'net-ground' },
+    )
+    const legacyDocument = JSON.parse(serializeDesignDocument(design)) as {
+      formatVersion: number
+    }
+    legacyDocument.formatVersion = 0
+
+    expect(() => parseDesignDocument(JSON.stringify(legacyDocument))).toThrow(
+      'formatVersion 0のタクトSW端子割り当ては自動変換できません。形式1で左側・右側の端子組へ割り当て直してください。',
     )
   })
 })

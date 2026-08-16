@@ -147,6 +147,13 @@ export function getFileName(filePath: string | null): string {
   return filePath.split(/[\\/]/).pop() ?? filePath
 }
 
+export function getProjectDisplayName(
+  designName: string,
+  filePath: string | null,
+): string {
+  return filePath === null ? designName : getFileName(filePath)
+}
+
 export type LoadDesignResult =
   | {
       ok: true

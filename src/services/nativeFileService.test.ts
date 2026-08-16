@@ -8,17 +8,16 @@ import {
 } from './nativeFileService'
 
 describe('nativeFileService helpers', () => {
-  it('推奨拡張子を重複なく付ける', () => {
-    expect(ensureDesignExtension('design')).toBe('design.perfboard.json')
+  it('拡張子を省略した場合だけJSON拡張子を付ける', () => {
+    expect(ensureDesignExtension('design')).toBe('design.json')
     expect(ensureDesignExtension('design.perfboard.json')).toBe(
       'design.perfboard.json',
     )
+    expect(ensureDesignExtension('UART-Bridge.json')).toBe('UART-Bridge.json')
   })
 
   it('設計名から安全な初期ファイル名を作る', () => {
-    expect(createDefaultFileName('電源/制御:基板')).toBe(
-      '電源-制御-基板.perfboard.json',
-    )
+    expect(createDefaultFileName('電源/制御:基板')).toBe('電源-制御-基板.json')
   })
 
   it('SVG拡張子を重複なく付ける', () => {

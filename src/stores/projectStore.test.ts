@@ -11,12 +11,23 @@ import {
 } from './editorHistory'
 import {
   createProjectFileState,
+  getProjectDisplayName,
   isProjectDirty,
   loadDesignSafely,
   projectFileReducer,
 } from './projectStore'
 
 describe('projectStore', () => {
+  it('保存先がある場合は画面表示にファイル名を使用する', () => {
+    expect(getProjectDisplayName('設計名', null)).toBe('設計名')
+    expect(
+      getProjectDisplayName(
+        'JSON内の設計名',
+        '/Users/example/UART-Bridge.json',
+      ),
+    ).toBe('UART-Bridge.json')
+  })
+
   it('新規作成直後と保存直後は未保存ではない', () => {
     const design = createEmptyDesignState()
     const initial = createProjectFileState(design)
@@ -40,7 +51,7 @@ describe('projectStore', () => {
       type: 'commit-placement',
       board: placing.present.board,
       id: 'part-1',
-      origin: { column: 3, row: 3 },
+      origin: { column: 3, row: 6 },
     })
     const savedDesign = getEditorDesignState(added.present)
     const savedProject = projectFileReducer(
@@ -75,7 +86,7 @@ describe('projectStore', () => {
       type: 'commit-placement',
       board: placing.present.board,
       id: 'part-1',
-      origin: { column: 3, row: 3 },
+      origin: { column: 3, row: 6 },
     })
     const savedDesign = getEditorDesignState(savedHistory.present)
     const project = projectFileReducer(

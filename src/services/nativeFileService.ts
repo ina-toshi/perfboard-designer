@@ -2,11 +2,11 @@ import { invoke } from '@tauri-apps/api/core'
 import { open, save } from '@tauri-apps/plugin-dialog'
 import type { AssemblySvgSide } from '../domain/svgExport'
 
-const DESIGN_EXTENSION = '.perfboard.json'
+const DESIGN_EXTENSION = '.json'
 const SVG_EXTENSION = '.svg'
 const DESIGN_FILTER = {
-  name: 'Perfboard Designer設計ファイル',
-  extensions: ['perfboard.json'],
+  name: 'Perfboard Designer JSON設計ファイル',
+  extensions: ['json'],
 }
 const SVG_FILTER = {
   name: 'SVG画像',
@@ -14,9 +14,12 @@ const SVG_FILTER = {
 }
 
 export function ensureDesignExtension(filePath: string): string {
-  return filePath.toLocaleLowerCase().endsWith(DESIGN_EXTENSION)
-    ? filePath
-    : `${filePath}${DESIGN_EXTENSION}`
+  const fileName = filePath.split(/[\\/]/).pop() ?? filePath
+  const extensionIndex = fileName.lastIndexOf('.')
+  const hasExtension =
+    extensionIndex > 0 && extensionIndex < fileName.length - 1
+
+  return hasExtension ? filePath : `${filePath}${DESIGN_EXTENSION}`
 }
 
 export function createDefaultFileName(designName: string): string {

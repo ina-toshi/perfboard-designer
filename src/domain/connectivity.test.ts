@@ -58,7 +58,7 @@ describe('analyzeConnectivity', () => {
     )
   })
 
-  it('タクトSWの上側と下側の端子を別々の導通グループにする', () => {
+  it('タクトSWの左側と右側の端子を別々の導通グループにする', () => {
     const tactileSwitch = createPart('tactile-switch', 'switch-1', 'SW1', {
       column: 2,
       row: 2,
@@ -84,9 +84,9 @@ describe('analyzeConnectivity', () => {
         ],
     )
 
-    expect(groupIds[0]).toBe(groupIds[1])
-    expect(groupIds[2]).toBe(groupIds[3])
-    expect(groupIds[0]).not.toBe(groupIds[2])
+    expect(groupIds[0]).toBe(groupIds[2])
+    expect(groupIds[1]).toBe(groupIds[3])
+    expect(groupIds[0]).not.toBe(groupIds[1])
     expect(
       analysis.issues.some(
         (issue) => issue.type === 'unconnected-assigned-pin',

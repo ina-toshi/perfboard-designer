@@ -37,11 +37,10 @@ export function areGridPointsEqual(
   return first.column === second.column && first.row === second.row
 }
 
-export function createWire(
+export function createWireFromPoints(
   id: string,
   side: WireSide,
-  start: GridPoint,
-  end: GridPoint,
+  points: GridPoint[],
   color?: string,
   kind: WireKind = side === 'front' ? 'jumper' : 'solder',
 ): Wire {
@@ -50,8 +49,19 @@ export function createWire(
     side,
     kind,
     color: color ?? DEFAULT_WIRE_COLORS[kind],
-    points: [{ ...start }, { ...end }],
+    points: points.map((point) => ({ ...point })),
   }
+}
+
+export function createWire(
+  id: string,
+  side: WireSide,
+  start: GridPoint,
+  end: GridPoint,
+  color?: string,
+  kind: WireKind = side === 'front' ? 'jumper' : 'solder',
+): Wire {
+  return createWireFromPoints(id, side, [start, end], color, kind)
 }
 
 export function getWireStart(wire: Wire): GridPoint {
@@ -76,15 +86,18 @@ export function getWireEnd(wire: Wire): GridPoint {
 
 export function isWireWithinBoard(wire: Wire, board: Board): boolean {
   return (
-    wire.points.length === 2 &&
+    wire.points.length >= 2 &&
     wire.points.every((point) => isGridPointWithinBoard(point, board))
   )
 }
 
 export function isZeroLengthWire(wire: Wire): boolean {
+  const start = wire.points[0]
+
   return (
+    start === undefined ||
     wire.points.length < 2 ||
-    areGridPointsEqual(getWireStart(wire), getWireEnd(wire))
+    wire.points.every((point) => areGridPointsEqual(start, point))
   )
 }
 

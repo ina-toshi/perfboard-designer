@@ -90,11 +90,10 @@ export function WireTools({
       {draft !== null && (
         <div className="wire-draft-notice">
           <p>
-            {getWireLabel(draft.kind, draft.side)}
-            の終点となる穴を選んでください。
+            {getWireLabel(draft.kind, draft.side)}を作成中です。曲げたい穴をクリックし、終点をダブルクリックして確定してください。
           </p>
           <span>
-            始点: 列{draft.start.column + 1}・行{draft.start.row + 1}
+            始点: 列{draft.start.column + 1}・行{draft.start.row + 1} / 設定点: {draft.points.length}点
           </span>
           <button type="button" onClick={onCancelDraft}>
             配線作成を中止

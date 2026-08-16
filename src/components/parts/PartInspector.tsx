@@ -136,7 +136,7 @@ export function PartInspector({
         {part.kind === 'tactile-switch' && (
           <p className="part-inspector-notice">
             外形は6 × 6
-            mmです。端子の間には1穴を空けます。上側のA1・A2と下側のB1・B2を、それぞれ別の導通グループとして扱います。
+            mmです。端子の間には1穴を空けます。左側のA1・A2と右側のB1・B2を、それぞれ別の導通グループとして扱います。
           </p>
         )}
         {part.kind === 'pin-header' && (

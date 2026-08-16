@@ -7,14 +7,18 @@ export type BoardViewState = {
   displayMode: DisplayMode
   mirrorBack: boolean
   showPartLabels: boolean
+  wireInspectionActive: boolean
   zoom: number
   pan: SvgPoint
 }
+
+export type BoardContentLayer = 'wires' | 'components'
 
 export const DEFAULT_BOARD_VIEW_STATE: BoardViewState = {
   displayMode: 'front',
   mirrorBack: true,
   showPartLabels: false,
+  wireInspectionActive: false,
   zoom: 1,
   pan: { x: 0, y: 0 },
 }
@@ -47,4 +51,12 @@ export function shouldMirrorWire(
   _side: WireSide,
 ): boolean {
   return shouldMirrorBoard(view)
+}
+
+export function getBoardContentLayerOrder(
+  view: BoardViewState,
+): BoardContentLayer[] {
+  return view.wireInspectionActive
+    ? ['components', 'wires']
+    : ['wires', 'components']
 }

@@ -10,6 +10,7 @@ import {
   generatePartReference,
   getCapacitorPositivePosition,
   getDiodeCathodePosition,
+  getNextRotation,
   getPartConductivePinGroups,
   getPartPinPositions,
   isPartWithinBoard,
@@ -40,6 +41,13 @@ function requirePartKind<K extends PartKind>(
 }
 
 describe('部品モデル', () => {
+  it('回転操作は逆方向へ90度進む', () => {
+    expect(getNextRotation(0)).toBe(270)
+    expect(getNextRotation(270)).toBe(180)
+    expect(getNextRotation(180)).toBe(90)
+    expect(getNextRotation(90)).toBe(0)
+  })
+
   it('抵抗の端子間に3穴を空けて生成する', () => {
     const part = createPart('resistor', 'resistor-1', 'R1', {
       column: 4,
@@ -212,8 +220,8 @@ describe('部品モデル', () => {
 
     expect(createTactileSwitchPins()).toEqual([
       { number: 'A1', offset: { column: 0, row: 0 } },
-      { number: 'A2', offset: { column: 2, row: 0 } },
-      { number: 'B1', offset: { column: 0, row: 2 } },
+      { number: 'B1', offset: { column: 2, row: 0 } },
+      { number: 'A2', offset: { column: 0, row: 2 } },
       { number: 'B2', offset: { column: 2, row: 2 } },
     ])
     expect(getPartPinPositions(part)).toEqual([

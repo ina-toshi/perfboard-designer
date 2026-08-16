@@ -105,8 +105,8 @@ export type TactileSwitchPart = BasePart & {
 }
 
 export const TACTILE_SWITCH_PIN_GROUPS = {
-  top: ['A1', 'A2'],
-  bottom: ['B1', 'B2'],
+  left: ['A1', 'A2'],
+  right: ['B1', 'B2'],
 } as const
 export type TactileSwitchGroup = keyof typeof TACTILE_SWITCH_PIN_GROUPS
 
@@ -278,8 +278,8 @@ export function createConnectorPins(pinCount: number): PartPin[] {
 export function createTactileSwitchPins(): PartPin[] {
   return [
     { number: 'A1', offset: { column: 0, row: 0 } },
-    { number: 'A2', offset: { column: 2, row: 0 } },
-    { number: 'B1', offset: { column: 0, row: 2 } },
+    { number: 'B1', offset: { column: 2, row: 0 } },
+    { number: 'A2', offset: { column: 0, row: 2 } },
     { number: 'B2', offset: { column: 2, row: 2 } },
   ]
 }
@@ -422,7 +422,7 @@ export function isPartWithinBoard(part: Part, board: Board): boolean {
 }
 
 export function getNextRotation(rotation: Rotation): Rotation {
-  return ((rotation + 90) % 360) as Rotation
+  return ((rotation + 270) % 360) as Rotation
 }
 
 export function withPartOrigin(part: Part, origin: GridPoint): Part {

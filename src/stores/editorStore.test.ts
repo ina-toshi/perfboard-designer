@@ -149,6 +149,7 @@ describe('editorReducer', () => {
           color: '#2563eb',
           points: [
             { column: 4, row: 5 },
+            { column: 6, row: 7 },
             { column: 7, row: 5 },
           ],
         },
@@ -167,23 +168,17 @@ describe('editorReducer', () => {
       endpointIndex: 1,
       point: { column: 9, row: 3 },
     })
-    const zeroLength = editorReducer(movedEnd, {
-      type: 'move-wire-endpoint',
-      wireId: 'wire-1',
-      endpointIndex: 1,
-      point: { column: 2, row: 8 },
-    })
 
     expect(movedStart.wires[0]?.points).toEqual([
       { column: 2, row: 8 },
+      { column: 6, row: 7 },
       { column: 7, row: 5 },
     ])
     expect(movedEnd.wires[0]?.points).toEqual([
       { column: 2, row: 8 },
+      { column: 6, row: 7 },
       { column: 9, row: 3 },
     ])
-    expect(zeroLength.wires).toBe(movedEnd.wires)
-    expect(zeroLength.error).toBe('始点と終点は異なる穴へ置いてください。')
   })
 
   it('配置アクションで部品を追加して選択する', () => {
@@ -243,7 +238,7 @@ describe('editorReducer', () => {
       reference: 'LED5',
       value: '緑色',
       origin: { column: 8, row: 8 },
-      rotation: 90,
+      rotation: 270,
     })
   })
 
@@ -503,7 +498,7 @@ describe('editorReducer', () => {
     ['wire-front', 'front', 'jumper'],
     ['wire-back', 'back', 'solder'],
     ['wire-back-jumper', 'back', 'jumper'],
-  ] as const)('%sツールで%sの%sを作成する', (tool, side, kind) => {
+  ] as const)('%sツールで%sの%sを折れ線として作成する', (tool, side, kind) => {
     const toolSelected = editorReducer(INITIAL_EDITOR_STATE, {
       type: 'set-active-tool',
       tool,
@@ -511,14 +506,26 @@ describe('editorReducer', () => {
     const started = editorReducer(toolSelected, {
       type: 'wire-point-click',
       board: DEFAULT_BOARD,
-      id: 'unused',
+      id: 'unused-1',
       point: { column: 3, row: 4 },
     })
-    const previewed = editorReducer(started, {
+    const firstBend = editorReducer(started, {
+      type: 'wire-point-click',
+      board: DEFAULT_BOARD,
+      id: 'unused-2',
+      point: { column: 8, row: 4 },
+    })
+    const previewed = editorReducer(firstBend, {
       type: 'set-wire-preview',
       end: { column: 8, row: 6 },
     })
-    const completed = editorReducer(previewed, {
+    const endpointAdded = editorReducer(previewed, {
+      type: 'wire-point-click',
+      board: DEFAULT_BOARD,
+      id: 'unused-3',
+      point: { column: 8, row: 6 },
+    })
+    const completed = editorReducer(endpointAdded, {
       type: 'wire-point-click',
       board: DEFAULT_BOARD,
       id: `wire-${side}-${kind}-1`,
@@ -530,6 +537,10 @@ describe('editorReducer', () => {
       side,
       kind,
       start: { column: 3, row: 4 },
+      points: [
+        { column: 3, row: 4 },
+        { column: 8, row: 4 },
+      ],
       previewEnd: { column: 8, row: 6 },
     })
     expect(getSelectedWire(completed)).toMatchObject({
@@ -538,6 +549,7 @@ describe('editorReducer', () => {
       kind,
       points: [
         { column: 3, row: 4 },
+        { column: 8, row: 4 },
         { column: 8, row: 6 },
       ],
     })
@@ -561,7 +573,7 @@ describe('editorReducer', () => {
     expect(rejected.error).toBe('基板内の穴を選んでください。')
   })
 
-  it('長さ0の配線を拒否して作成途中を維持する', () => {
+  it('始点だけの状態では配線確定を拒否して作成途中を維持する', () => {
     const toolSelected = editorReducer(INITIAL_EDITOR_STATE, {
       type: 'set-active-tool',
       tool: 'wire-back',
@@ -581,7 +593,7 @@ describe('editorReducer', () => {
 
     expect(rejected.wires).toHaveLength(0)
     expect(rejected.wireDraft?.start).toEqual({ column: 5, row: 5 })
-    expect(rejected.error).toBe('始点と異なる穴を終点として選んでください。')
+    expect(rejected.error).toBe('始点と異なる穴を選んでください。')
   })
 
   it('配線作成を中止しても確定済み配線を保持する', () => {
@@ -604,6 +616,10 @@ describe('editorReducer', () => {
         side: 'front' as const,
         kind: 'jumper' as const,
         start: { column: 7, row: 7 },
+        points: [
+          { column: 7, row: 7 },
+          { column: 9, row: 7 },
+        ],
         previewEnd: { column: 9, row: 9 },
         color: '#2563eb',
       },
@@ -777,7 +793,7 @@ describe('editorReducer', () => {
     expect(missingPin.pinNetAssignments).toBe(assigned.pinNetAssignments)
   })
 
-  it('タクトSWの上側と下側へ別々のネットを割り当てる', () => {
+  it('タクトSWの左側と右側へ別々のネットを割り当てる', () => {
     const placing = editorReducer(INITIAL_EDITOR_STATE, {
       type: 'begin-new-part',
       kind: 'tactile-switch',
@@ -791,25 +807,25 @@ describe('editorReducer', () => {
     const withNet = editorReducer(placed, {
       type: 'create-net',
       id: 'net-1',
-      name: 'TOP',
+      name: 'LEFT',
       kind: 'signal',
     })
     const withSecondNet = editorReducer(withNet, {
       type: 'create-net',
       id: 'net-2',
-      name: 'BOTTOM',
+      name: 'RIGHT',
       kind: 'signal',
     })
-    const topAssigned = editorReducer(withSecondNet, {
+    const leftAssigned = editorReducer(withSecondNet, {
       type: 'assign-tactile-switch-group-net',
       partId: 'switch-1',
-      group: 'top',
+      group: 'left',
       netId: 'net-1',
     })
-    const assigned = editorReducer(topAssigned, {
+    const assigned = editorReducer(leftAssigned, {
       type: 'assign-tactile-switch-group-net',
       partId: 'switch-1',
-      group: 'bottom',
+      group: 'right',
       netId: 'net-2',
     })
     const rejectedIndividualAssignment = editorReducer(withSecondNet, {
@@ -821,7 +837,7 @@ describe('editorReducer', () => {
     const unassigned = editorReducer(assigned, {
       type: 'unassign-tactile-switch-group-net',
       partId: 'switch-1',
-      group: 'top',
+      group: 'left',
     })
 
     expect(assigned.pinNetAssignments).toEqual([
@@ -832,7 +848,7 @@ describe('editorReducer', () => {
     ])
     expect(rejectedIndividualAssignment.pinNetAssignments).toEqual([])
     expect(rejectedIndividualAssignment.error).toBe(
-      'タクトSWのネットは上側または下側の端子組から割り当ててください。',
+      'タクトSWのネットは左側または右側の端子組から割り当ててください。',
     )
     expect(unassigned.pinNetAssignments).toEqual([
       { partId: 'switch-1', pinNumber: 'B1', netId: 'net-2' },

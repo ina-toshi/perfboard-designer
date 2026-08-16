@@ -61,6 +61,7 @@ import {
   highlightReducer,
   INITIAL_HIGHLIGHT_STATE,
 } from './stores/highlightStore'
+import { getProjectDisplayName } from './stores/projectStore'
 import './App.css'
 
 const DISPLAY_MODE_LABELS: Record<DisplayMode, string> = {
@@ -116,6 +117,10 @@ function App() {
     restoreRecoveryDraft,
     discardRecoveryDraft,
   } = useProjectFiles(history, dispatch)
+  const projectDisplayName = getProjectDisplayName(
+    editor.metadata.name,
+    project.filePath,
+  )
   const board = editor.board
   const selectedPart = getSelectedPart(editor)
   const selectedWire = getSelectedWire(editor)
@@ -162,6 +167,10 @@ function App() {
   useEffect(() => {
     function handleEditorKeyboard(event: KeyboardEvent) {
       if (event.isComposing) {
+        return
+      }
+
+      if (view.wireInspectionActive) {
         return
       }
 
@@ -216,7 +225,12 @@ function App() {
 
     window.addEventListener('keydown', handleEditorKeyboard)
     return () => window.removeEventListener('keydown', handleEditorKeyboard)
-  }, [board, editor.selectedPartId, editor.selectedWireId])
+  }, [
+    board,
+    editor.selectedPartId,
+    editor.selectedWireId,
+    view.wireInspectionActive,
+  ])
 
   useEffect(() => {
     if (
@@ -252,6 +266,14 @@ function App() {
     )
   }
 
+  function setWireInspectionActive(active: boolean) {
+    setView((currentView) =>
+      currentView.wireInspectionActive === active
+        ? currentView
+        : { ...currentView, wireInspectionActive: active },
+    )
+  }
+
   function beginPartPlacement(kind: PartKind) {
     dispatch({ type: 'begin-new-part', kind })
   }
@@ -279,7 +301,7 @@ function App() {
         <div className="app-branding">
           <h1>Perfboard Designer</h1>
           <p>
-            {editor.metadata.name}
+            {projectDisplayName}
             {dirty && <span className="dirty-indicator">未保存</span>}
           </p>
         </div>
@@ -399,6 +421,46 @@ function App() {
                   />
                   部品ラベルを表示
                 </label>
+                <div className="wire-inspection-control">
+                  <button
+                    className={
+                      view.wireInspectionActive ? 'is-active' : undefined
+                    }
+                    type="button"
+                    aria-pressed={view.wireInspectionActive}
+                    aria-describedby="wire-inspection-description"
+                    title="押している間だけ、配線を部品より手前に表示します"
+                    onPointerDown={(event) => {
+                      if (event.button !== 0) {
+                        return
+                      }
+
+                      event.currentTarget.setPointerCapture(event.pointerId)
+                      setWireInspectionActive(true)
+                    }}
+                    onPointerUp={() => setWireInspectionActive(false)}
+                    onPointerCancel={() => setWireInspectionActive(false)}
+                    onLostPointerCapture={() => setWireInspectionActive(false)}
+                    onBlur={() => setWireInspectionActive(false)}
+                    onKeyDown={(event) => {
+                      if (event.key === ' ' || event.key === 'Enter') {
+                        event.preventDefault()
+                        setWireInspectionActive(true)
+                      }
+                    }}
+                    onKeyUp={(event) => {
+                      if (event.key === ' ' || event.key === 'Enter') {
+                        event.preventDefault()
+                        setWireInspectionActive(false)
+                      }
+                    }}
+                  >
+                    押している間、配線を手前に表示
+                  </button>
+                  <p id="wire-inspection-description">
+                    確認専用です。押している間は基板上を編集できません。
+                  </p>
+                </div>
               </section>
 
               {editor.error !== null && (
